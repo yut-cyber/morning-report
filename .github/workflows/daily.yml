@@ -1,0 +1,44 @@
+name: Daily Morning Report
+
+on:
+  schedule:
+    # 每天 UTC 02:00 = 北京时间 10:00
+    # 注意: GitHub 免费版 cron 可能延迟数分钟到十几分钟
+    - cron: "0 2 * * *"
+  workflow_dispatch: # 支持手动触发(调试用)
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate report
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+        run: python main.py
+
+      - name: Commit and push report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "无变化, 跳过提交"
+          else
+            git commit -m "report: ${GITHUB_RUN_ID} $(date +%Y-%m-%d)"
+            git push
+          fi
