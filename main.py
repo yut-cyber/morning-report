@@ -27,6 +27,14 @@ TIME_STR = NOW.strftime("%H:%M")
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL") or "google/gemma-4-31b-it:free"
+# 免费模型不稳定(限流/下线/输出为空), 依次回退尝试
+FALLBACK_MODELS = [
+    OPENROUTER_MODEL,
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "inclusionai/ling-3.0-flash-fin:free",
+    "liquid/lfm-2.5-2.6b:free",
+    "google/gemma-4-31b-it:free",
+]
 PUSHPLUS_TOKEN = os.getenv("PUSHPLUS_TOKEN", "")
 DASHBOARD_URL = os.getenv("DASHBOARD_URL", "").rstrip("/")
 
@@ -138,28 +146,47 @@ def llm_summarize(trending, papers, news):
     )
     try:
         data = None
-        for attempt in range(3):
-            resp = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
-                json={
-                    "model": OPENROUTER_MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.3,
-                    "max_tokens": 3000,
-                },
-                timeout=120,
-            )
-            if resp.status_code == 429:
-                wait = 60 * (attempt + 1)
-                print(f"[llm] 限流(429), {wait}s 后重试({attempt + 1}/3)")
-                time.sleep(wait)
-                continue
-            resp.raise_for_status()
-            content = resp.json()["choices"][0]["message"]["content"].strip()
-            m = re.search(r"\{[\s\S]*\}", content)
-            data = json.loads(m.group(0))
-            break
+        for model in FALLBACK_MODELS:
+            try:
+                resp = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "model": model,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "temperature": 0.3,
+                        "max_tokens": 4000,
+                    },
+                    timeout=120,
+                )
+                if resp.status_code == 429:
+                    print(f"[llm] {model} 限流(429), 跳过")
+                    continue
+                resp.raise_for_status()
+                msg = resp.json()["choices"][0]["message"]
+                content = (msg.get("content") or "").strip()
+                if not content and msg.get("reasoning"):
+                    # 推理模型可能把正文写进 reasoning, 尝试提取
+                    content = msg["reasoning"].strip()
+                if not content:
+                    print(f"[llm] {model} 返回空内容, 跳过")
+                    continue
+                m = re.search(r"\{[\s\S]*\}", content)
+                if not m:
+                    print(f"[llm] {model} 未返回JSON, 跳过")
+                    continue
+                try:
+                    # raw_decode: 解析第一个完整 JSON 对象, 忽略尾部多余文本
+                    data = json.JSONDecoder().raw_decode(m.group(0))[0]
+                except json.JSONDecodeError:
+                    print(f"[llm] {model} JSON 解析失败, 跳过")
+                    continue
+                if data.get("trending") or data.get("papers") or data.get("news"):
+                    print(f"[llm] 使用模型: {model}")
+                    return data
+                print(f"[llm] {model} JSON 内容为空, 跳过")
+            except Exception as me:
+                print(f"[llm] {model} 失败: {me}")
         return data
     except Exception as e:
         print(f"[llm] 摘要失败, 使用兜底: {e}")
