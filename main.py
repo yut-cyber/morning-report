@@ -462,7 +462,7 @@ def build_html(trending, papers, news):
 
 
 # ---------- 微信推送 ----------
-def push_wechat(title, content):
+def push_wechat(title, content, template="markdown"):
     if not PUSHPLUS_TOKEN:
         print("[push] 未配置 PUSHPLUS_TOKEN, 跳过推送")
         return False
@@ -470,7 +470,7 @@ def push_wechat(title, content):
         try:
             resp = requests.post(
                 "http://www.pushplus.plus/send",
-                json={"token": PUSHPLUS_TOKEN, "title": title, "content": content, "template": "markdown"},
+                json={"token": PUSHPLUS_TOKEN, "title": title, "content": content, "template": template},
                 timeout=TIMEOUT,
             )
             data = resp.json()
@@ -484,23 +484,84 @@ def push_wechat(title, content):
     return False
 
 
-def build_push_markdown(trending, papers, news):
-    lines = [f"## AI 每日早报 {DATE_STR} 星期{WEEK_CN}", ""]
+def build_push_card(trending, papers, news):
+    """微信推送 HTML 卡片(报纸风, 全内联样式, 匹配看板配色)"""
+    INK, PAPER, BG, RED, BLUE, YELLOW, MUTED = "#14161A", "#FFFFFF", "#F6F5F1", "#E8442E", "#1D4ED8", "#FFC53D", "#8a8f98"
+
+    def chip(text, bg, color=INK, border="transparent"):
+        return (f'<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;'
+                f'border-radius:4px;background:{bg};color:{color};border:1px solid {border};margin:2px 4px 2px 0;">{text}</span>')
+
+    H = []
+    # 头部
+    H.append(
+        f'<div style="max-width:640px;margin:0 auto;background:{BG};border-radius:12px;overflow:hidden;'
+        f'font-family:-apple-system,\'PingFang SC\',\'Microsoft YaHei\',sans-serif;border:1px solid #e5e2da;">'
+        f'<div style="background:{INK};padding:22px 20px 18px;">'
+        f'<div style="color:{YELLOW};font-size:11px;font-weight:800;letter-spacing:4px;">DAILY BRIEFING</div>'
+        f'<div style="color:{PAPER};font-size:24px;font-weight:900;margin-top:6px;">AI 每日早报 <span style="color:{RED};">●</span></div>'
+        f'<div style="margin-top:10px;">'
+        + chip(f"{DATE_STR} · 星期{WEEK_CN}", RED, PAPER)
+        + chip(f"{TIME_STR} 生成", "#2a2d34", "#cfd3da")
+        + '</div></div>'
+    )
+    # 看板按钮
     if DASHBOARD_URL:
-        lines.append(f"[查看完整看板]({DASHBOARD_URL})")
-        lines.append("")
-    lines.append("**GitHub 热门**")
+        H.append(
+            f'<div style="padding:14px 16px;background:{PAPER};border-bottom:1px dashed #d8d4c8;">'
+            f'<a href="{DASHBOARD_URL}" style="display:block;text-align:center;background:{INK};color:{YELLOW};'
+            f'font-weight:800;font-size:15px;padding:10px;border-radius:6px;text-decoration:none;">📰 查看完整看板</a></div>'
+        )
+    # GitHub 热门
+    H.append(f'<div style="padding:6px 16px 16px;">')
+    H.append(f'<div style="margin:14px 0 2px;font-size:17px;font-weight:900;color:{INK};">🔥 GitHub 热门</div>')
     for i, t in enumerate(trending, 1):
-        lines.append(f"{i}. [{t['name']}]({t['url']}) — {t.get('summary', '')}")
-    lines.append("")
-    lines.append("**每日论文**")
+        chips = ""
+        if t.get("lang"):
+            chips += chip(escape(t["lang"]), YELLOW)
+        if t.get("stars"):
+            chips += chip(f"★ {escape(t['stars'])}", INK, PAPER)
+        if t.get("today"):
+            chips += chip(f"今日 +{escape(t['today'])}", RED, PAPER)
+        summary = escape(t.get("summary", ""))
+        H.append(
+            f'<div style="background:{PAPER};border:1px solid {INK};border-radius:8px;padding:12px 14px;margin-top:10px;">'
+            f'<div><span style="color:{RED};font-weight:900;font-size:15px;margin-right:8px;">{i:02d}</span>'
+            f'<a href="{escape(t["url"])}" style="font-family:Consolas,monospace;font-weight:800;font-size:15px;color:{INK};text-decoration:none;">{escape(t["name"])}</a></div>'
+            + (f'<div style="margin-top:6px;">{chips}</div>' if chips else "")
+            + f'<div style="margin-top:8px;font-size:13px;color:#3a3f47;line-height:1.65;">{summary}</div></div>'
+        )
+    # 每日论文
+    H.append(f'<div style="margin:20px 0 2px;font-size:17px;font-weight:900;color:{INK};">📄 每日论文</div>')
     for p in papers[:4]:
-        lines.append(f"- [{p.get('title_cn') or p['title']}]({p['url']})")
-    lines.append("")
-    lines.append("**快讯**")
+        title = escape(p.get("title_cn") or p["title"])
+        summary = escape(p.get("summary", ""))
+        summary_html = f'<div style="margin-top:6px;font-size:12.5px;color:#3a3f47;line-height:1.6;">{summary}</div>' if summary else ""
+        H.append(
+            f'<div style="background:{PAPER};border:1px solid {INK};border-radius:8px;padding:12px 14px;margin-top:10px;">'
+            f'<div>{chip("PAPER", BLUE, PAPER)}'
+            f'<a href="{escape(p["url"])}" style="font-weight:800;font-size:14px;color:{INK};text-decoration:none;line-height:1.5;">{title}</a></div>'
+            f'{summary_html}</div>'
+        )
+    # 快讯
+    H.append(f'<div style="margin:20px 0 2px;font-size:17px;font-weight:900;color:{INK};">⚡ 技术 / AI 快讯</div>')
     for n in news[:5]:
-        lines.append(f"- [{n.get('title_cn') or n['title']}]({n['url']})")
-    return "\n".join(lines)
+        title = escape(n.get("title_cn") or n["title"])
+        is_ai = n.get("tag") == "AI"
+        tag = chip(n.get("tag", "TECH"), RED if is_ai else INK, PAPER)
+        H.append(
+            f'<div style="background:{PAPER};border:1px solid {INK};border-radius:8px;padding:10px 14px;margin-top:10px;">'
+            f'<div>{tag}'
+            f'<a href="{escape(n["url"])}" style="font-weight:700;font-size:14px;color:{INK};text-decoration:none;line-height:1.5;">{title}</a></div></div>'
+        )
+    H.append('</div>')
+    # 页脚
+    H.append(
+        f'<div style="background:{INK};color:{MUTED};font-size:11px;padding:14px 16px;line-height:1.8;">'
+        f'数据源: GitHub Trending · HuggingFace Papers · HackerNews<br>'
+        f'摘要由开源模型生成 · {DATE_STR} 星期{WEEK_CN}</div></div>'
+    )
+    return "".join(H)
 
 
 # ---------- 主流程 ----------
@@ -524,8 +585,8 @@ def main():
         f.write(html)
     print(f"页面已生成: {index_path}")
 
-    md = build_push_markdown(trending, papers, news)
-    ok = push_wechat(f"AI 早报 {DATE_STR}", md)
+    card = build_push_card(trending, papers, news)
+    ok = push_wechat(f"AI 早报 {DATE_STR}", card, template="html")
     if not ok and PUSHPLUS_TOKEN:
         push_wechat(f"⚠️ 早报推送异常 {DATE_STR}", "正文推送失败, 请检查 GitHub Actions 日志。")
 
