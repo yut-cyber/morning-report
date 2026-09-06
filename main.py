@@ -26,7 +26,7 @@ WEEK_CN = "一二三四五六日"[NOW.weekday()]
 TIME_STR = NOW.strftime("%H:%M")
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL") or "google/gemma-4-31b-it:free"
 PUSHPLUS_TOKEN = os.getenv("PUSHPLUS_TOKEN", "")
 DASHBOARD_URL = os.getenv("DASHBOARD_URL", "").rstrip("/")
 
