@@ -137,21 +137,29 @@ def llm_summarize(trending, papers, news):
         + "\n".join(lines)
     )
     try:
-        resp = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
-            json={
-                "model": OPENROUTER_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.3,
-                "max_tokens": 3000,
-            },
-            timeout=60,
-        )
-        resp.raise_for_status()
-        content = resp.json()["choices"][0]["message"]["content"].strip()
-        m = re.search(r"\{[\s\S]*\}", content)
-        data = json.loads(m.group(0))
+        data = None
+        for attempt in range(3):
+            resp = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+                json={
+                    "model": OPENROUTER_MODEL,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.3,
+                    "max_tokens": 3000,
+                },
+                timeout=120,
+            )
+            if resp.status_code == 429:
+                wait = 60 * (attempt + 1)
+                print(f"[llm] 限流(429), {wait}s 后重试({attempt + 1}/3)")
+                time.sleep(wait)
+                continue
+            resp.raise_for_status()
+            content = resp.json()["choices"][0]["message"]["content"].strip()
+            m = re.search(r"\{[\s\S]*\}", content)
+            data = json.loads(m.group(0))
+            break
         return data
     except Exception as e:
         print(f"[llm] 摘要失败, 使用兜底: {e}")
