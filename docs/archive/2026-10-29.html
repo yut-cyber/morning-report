@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日早报 · 2026-10-29</title>
+<style>
+:root {
+  --ink: #14161A;
+  --paper: #FFFFFF;
+  --bg: #F6F5F1;
+  --red: #E8442E;
+  --blue: #1D4ED8;
+  --yellow: #FFC53D;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+/* ===== 头部 ===== */
+.masthead { background: var(--paper); border-bottom: 4px solid var(--ink); position: relative; overflow: hidden; }
+.masthead-top { height: 10px; background: repeating-linear-gradient(90deg, var(--red) 0 60px, var(--ink) 60px 120px, var(--yellow) 120px 180px, var(--ink) 180px 240px); }
+.masthead-inner { display:flex; justify-content:space-between; align-items:flex-end; padding: 44px 0 36px; gap: 32px; flex-wrap: wrap; }
+.kicker { display:inline-flex; align-items:center; gap:10px; font-size:13px; font-weight:800; letter-spacing:.35em; color: var(--red); margin-bottom: 14px; }
+.kicker::before { content:""; width:34px; height:4px; background: var(--red); display:inline-block; }
+h1 { font-size: clamp(46px, 7.5vw, 88px); font-weight: 900; line-height: 1.02; letter-spacing: .02em; }
+h1 .thin { font-weight: 200; }
+.masthead-meta { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+.meta-chip { border: 2.5px solid var(--ink); background: var(--paper); padding: 8px 16px; font-size: 14px; font-weight: 800; box-shadow: 4px 4px 0 var(--ink); }
+.meta-chip.hot { background: var(--ink); color: #fff; }
+.deco { position:absolute; right: -30px; top: 8px; opacity:.9; pointer-events:none; }
+
+/* ===== 板块标题 ===== */
+.section { margin-top: 56px; }
+.sec-head { display:flex; align-items:center; gap:16px; margin-bottom: 26px; }
+.sec-no { background: var(--red); color:#fff; font-weight:900; font-size:20px; padding:6px 14px; box-shadow: 4px 4px 0 var(--ink); }
+.sec-title { font-size: clamp(26px, 3.4vw, 38px); font-weight:900; letter-spacing:.04em; }
+.sec-en { font-size:12px; font-weight:800; letter-spacing:.3em; color:#8a8f98; text-transform:uppercase; margin-left:auto; }
+
+/* ===== Trending 卡片 ===== */
+.tcard { display:flex; gap:0; background: var(--paper); border: 2.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); margin-bottom: 20px; transition: transform .15s ease, box-shadow .15s ease; }
+.tcard:hover { transform: translate(-2px,-2px); box-shadow: 9px 9px 0 var(--ink); }
+.tcard-rank { flex: 0 0 86px; display:flex; align-items:center; justify-content:center; font-size: 40px; font-weight: 900; color: var(--red); border-right: 2.5px solid var(--ink); background: #FFF7F5; font-variant-numeric: tabular-nums; }
+.tcard-body { padding: 20px 24px; flex:1; min-width:0; }
+.tcard-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+.tcard-name { font-family: "SFMono-Regular", Consolas, "Courier New", monospace; font-size: 19px; font-weight: 800; }
+.tcard-name:hover { color: var(--blue); text-decoration: underline; }
+.tcard-sum { font-size: 15px; line-height: 1.7; color: #2b2f36; margin-bottom: 12px; }
+.tcard-meta { display:flex; gap:10px; flex-wrap:wrap; }
+.chip { display:inline-block; font-size:12px; font-weight:800; padding:4px 12px; border:2px solid var(--ink); }
+.chip-lang { background: var(--yellow); }
+.chip-star { background: var(--ink); color:#fff; border-color: var(--ink); }
+.chip-today { background: var(--red); color:#fff; border-color: var(--red); }
+.chip-plain { background:#fff; }
+
+/* ===== 论文 / 快讯卡片 ===== */
+.grid { display:grid; gap:20px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.pcard { display:block; background: var(--paper); border: 2.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: 22px; transition: transform .15s ease, box-shadow .15s ease; }
+.pcard:hover { transform: translate(-2px,-2px); box-shadow: 9px 9px 0 var(--ink); }
+.ptag { display:inline-block; font-size:11px; font-weight:900; letter-spacing:.2em; padding:4px 10px; margin-bottom:12px; background: var(--blue); color:#fff; }
+.ptag.red { background: var(--red); }
+.ptag.dark { background: var(--ink); }
+.pcard h3 { font-size:17px; font-weight:900; line-height:1.45; margin-bottom:8px; }
+.pcard p { font-size:13.5px; line-height:1.65; color:#3a3f47; }
+.pcard .src { display:block; margin-top:12px; font-size:11px; font-weight:800; letter-spacing:.15em; color:#8a8f98; }
+
+/* ===== 页脚 ===== */
+.footer { margin-top: 72px; background: var(--ink); color:#fff; }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; gap:20px; padding: 30px 0; flex-wrap:wrap; }
+.footer .big { font-size:22px; font-weight:900; letter-spacing:.06em; }
+.footer .small { font-size:12px; color:#9aa0a8; line-height:1.8; }
+.footer .red { color: var(--red); }
+
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .tcard-rank { flex-basis: 60px; font-size: 28px; }
+  .masthead-inner { padding: 30px 0 26px; }
+}
+@media print {
+  .tcard, .pcard { box-shadow:none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top"></div>
+  <svg class="deco" width="260" height="150" viewBox="0 0 260 150" fill="none">
+    <circle cx="210" cy="40" r="26" fill="#E8442E"/>
+    <rect x="120" y="90" width="46" height="46" fill="#FFC53D" stroke="#14161A" stroke-width="4"/>
+    <path d="M30 120 L70 60 L110 120 Z" fill="none" stroke="#14161A" stroke-width="5"/>
+    <line x1="0" y1="30" x2="90" y2="30" stroke="#14161A" stroke-width="5"/>
+  </svg>
+  <div class="wrap masthead-inner">
+    <div>
+      <div class="kicker">DAILY BRIEFING</div>
+      <h1>AI 每日<span class="thin">早报</span></h1>
+    </div>
+    <div class="masthead-meta">
+      <span class="meta-chip hot">2026-10-29 · 星期四</span>
+      <span class="meta-chip">生成时间 15:57 (北京时间)</span>
+      <span class="meta-chip">GitHub · HuggingFace · HackerNews</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2 class="sec-title">GitHub 热门项目</h2>
+      <span class="sec-en">Trending Top 10</span>
+    </div>
+    <article class="tcard"><div class="tcard-rank">01</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/JetBrains/thinkrail" target="_blank" rel="noopener">JetBrains//thinkrail</a></div><p class="tcard-sum">JetBrains 推出的轻量级 IDE，支持根据工作习惯自动定制的 AI 编程体验。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 5,474</span><span class="chip chip-today">今日 +1,068</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">02</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/elayadesign/ai-design-skills" target="_blank" rel="noopener">elayadesign//ai-design-skills</a></div><p class="tcard-sum">一套旨在提升 AI 设计能力的技能集，帮助用户更好地利用 AI 进行设计。</p><div class="tcard-meta"><span class="chip chip-star">★ 11,495</span><span class="chip chip-today">今日 +2,139</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">03</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra//superpowers</a></div><p class="tcard-sum">一个可落地的 Agent 技能框架与软件开发方法论，提升 AI 代理的执行力。</p><div class="tcard-meta"><span class="chip chip-lang">Shell</span><span class="chip chip-star">★ 307,726</span><span class="chip chip-today">今日 +1,095</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">04</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/HKUDS/DeepTutor" target="_blank" rel="noopener">HKUDS//DeepTutor</a></div><p class="tcard-sum">由港大研发的终身个性化辅导系统，提供定制化的 AI 教育支持。</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 48,694</span><span class="chip chip-today">今日 +2,371</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">05</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/macro-inc/macro" target="_blank" rel="noopener">macro-inc//macro</a></div><p class="tcard-sum">集成邮件、文档、CRM 等功能的统一团队协作空间，具备共享 AI 记忆。</p><div class="tcard-meta"><span class="chip chip-lang">Rust</span><span class="chip chip-star">★ 5,581</span><span class="chip chip-today">今日 +117</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">06</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/Nutlope/hallmark" target="_blank" rel="noopener">Nutlope//hallmark</a></div><p class="tcard-sum">针对 Claude Code 等工具的防 AI 冗余设计技能，旨在提升生成质量。</p><div class="tcard-meta"><span class="chip chip-lang">CSS</span><span class="chip chip-star">★ 41,165</span><span class="chip chip-today">今日 +2,110</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">07</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/pbakaus/impeccable" target="_blank" rel="noopener">pbakaus//impeccable</a></div><p class="tcard-sum">为编程 Agent 提供的设计词汇库，通过精准指令减少 AI 冗余输出（与 hallmark 相关）。</p><div class="tcard-meta"><span class="chip chip-lang">Rust</span><span class="chip chip-star">★ 93,623</span><span class="chip chip-today">今日 +1,472</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">08</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/makecindy/cindy" target="_blank" rel="noopener">makecindy//cindy</a></div><p class="tcard-sum">开源且开箱即用的 AI Agent，旨在简化从想法到执行的流程。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 8,353</span><span class="chip chip-today">今日 +728</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">09</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/nightly-labs/openbot" target="_blank" rel="noopener">nightly-labs//openbot</a></div><p class="tcard-sum">本地优先的桌面工作区，支持多模型 AI 队友协作及浏览器控制。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 3,475</span><span class="chip chip-today">今日 +1,054</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">10</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/togg53192-cmd/jailbreaks" target="_blank" rel="noopener">togg53192-cmd//jailbreaks</a></div><p class="tcard-sum">一个收集各种 AI 模型 Jailbreak（越狱）提示词的列表。</p><div class="tcard-meta"><span class="chip chip-star">★ 7,616</span><span class="chip chip-today">今日 +1,477</span></div></div></article>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2 class="sec-title">HuggingFace 每日论文</h2>
+      <span class="sec-en">Daily Papers</span>
+    </div>
+    <div class="grid grid-3">
+      <a class="pcard" href="https://huggingface.co/papers/2610.35201" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>DTCA 扩散语言模型 RL 算法</h3><p>通过去噪 Token 信用分配优化扩散语言模型的强化学习过程。</p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2610.32749" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>高效流式视听目标说话人提取</h3><p>实现真实复杂声学场景下的高效实时目标说话人语音提取。</p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2610.35684" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>OmniShowcase 全向视频生成</h3><p>基于多视图图像生成主体一致的全向视频，增强视觉连续性。</p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2610.31670" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>感觉运动对齐具身策略代理</h3><p>提出一种感觉运动对齐方法，作为衡量具身智能策略成功的代理指标。</p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2610.37230" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>TAO LLM Agent 联合调度</h3><p>针对基于 LLM 的 Agent 服务提出一种工具感知的联合调度方案。</p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2601.15351" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>OmniSpectra 通用光谱基础模型</h3><p>构建一个统一的基础模型，用于通用光谱表示学习。</p><span class="src">HUGGINGFACE.CO</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2 class="sec-title">AI / 技术快讯</h2>
+      <span class="sec-en">HackerNews Digest</span>
+    </div>
+    <div class="grid grid-2">
+      <a class="pcard" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Gemini 4 Carbon</h3><p>关于 Google Gemini 4 Carbon 版本的相关技术讨论或更新。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www.circuithub.com/post/unveiling-the-grid" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>The Grid PCB 自动化工厂</h3><p>马萨诸塞州的一家工厂级机器人系统，可按需快速制造 PCB。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://divagr.com/blog/qwenputer" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Qwenputer RISC-V CPU</h3><p>在 Qwen3.5 模型内部实现了一个可运行且确定性的 RISC-V CPU。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://gist.github.com/flamerix-ai/c3905705cc4205e5de3011fa2e74efce" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Claude Code 传输机制</h3><p>揭露 Claude Code 定期将后台 Agent 记录发送至模型的运行机制。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://surgehq.ai/blog/dayjob-tax" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Dayjob AI 税务评估</h3><p>通过 50 个专业税务任务评估 AI Agent 在专业财务领域的表现。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://cursor.com/blog/agent-sdk" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>The Agent SDK</h3><p>一个旨在标准化 AI Agent 开发与集成的软件开发工具包。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://the-decoder.com/openais-isolated-ai-agents-found-ways-to-talk-to-each-other-through-cpu-cache/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>OpenAI Agent 缓存通信</h3><p>发现 OpenAI 的 Agent 之间通过 CPU 缓存进行通信的有趣现象。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://fzakaria.com/2026/10/12/nixpkgs-for-the-frontend-impaired" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>前端障碍者 Nixpkgs</h3><p>为前端视觉或操作受限用户提供的 Nixpkgs 优化方案。</p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="big">AI 每日早报 <span class="red">●</span></div>
+      <div class="small">自动化生成 · GitHub Actions 每日 10:00 (北京时间) · 摘要由开源模型生成</div>
+    </div>
+    <div class="small">数据源: GitHub Trending / HuggingFace Papers / HackerNews<br>2026-10-29 · 星期四</div>
+  </div>
+</footer>
+
+</body>
+</html>
