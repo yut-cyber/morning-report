@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日早报 · 2026-11-16</title>
+<style>
+:root {
+  --ink: #14161A;
+  --paper: #FFFFFF;
+  --bg: #F6F5F1;
+  --red: #E8442E;
+  --blue: #1D4ED8;
+  --yellow: #FFC53D;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+/* ===== 头部 ===== */
+.masthead { background: var(--paper); border-bottom: 4px solid var(--ink); position: relative; overflow: hidden; }
+.masthead-top { height: 10px; background: repeating-linear-gradient(90deg, var(--red) 0 60px, var(--ink) 60px 120px, var(--yellow) 120px 180px, var(--ink) 180px 240px); }
+.masthead-inner { display:flex; justify-content:space-between; align-items:flex-end; padding: 44px 0 36px; gap: 32px; flex-wrap: wrap; }
+.kicker { display:inline-flex; align-items:center; gap:10px; font-size:13px; font-weight:800; letter-spacing:.35em; color: var(--red); margin-bottom: 14px; }
+.kicker::before { content:""; width:34px; height:4px; background: var(--red); display:inline-block; }
+h1 { font-size: clamp(46px, 7.5vw, 88px); font-weight: 900; line-height: 1.02; letter-spacing: .02em; }
+h1 .thin { font-weight: 200; }
+.masthead-meta { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+.meta-chip { border: 2.5px solid var(--ink); background: var(--paper); padding: 8px 16px; font-size: 14px; font-weight: 800; box-shadow: 4px 4px 0 var(--ink); }
+.meta-chip.hot { background: var(--ink); color: #fff; }
+.deco { position:absolute; right: -30px; top: 8px; opacity:.9; pointer-events:none; }
+
+/* ===== 板块标题 ===== */
+.section { margin-top: 56px; }
+.sec-head { display:flex; align-items:center; gap:16px; margin-bottom: 26px; }
+.sec-no { background: var(--red); color:#fff; font-weight:900; font-size:20px; padding:6px 14px; box-shadow: 4px 4px 0 var(--ink); }
+.sec-title { font-size: clamp(26px, 3.4vw, 38px); font-weight:900; letter-spacing:.04em; }
+.sec-en { font-size:12px; font-weight:800; letter-spacing:.3em; color:#8a8f98; text-transform:uppercase; margin-left:auto; }
+
+/* ===== Trending 卡片 ===== */
+.tcard { display:flex; gap:0; background: var(--paper); border: 2.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); margin-bottom: 20px; transition: transform .15s ease, box-shadow .15s ease; }
+.tcard:hover { transform: translate(-2px,-2px); box-shadow: 9px 9px 0 var(--ink); }
+.tcard-rank { flex: 0 0 86px; display:flex; align-items:center; justify-content:center; font-size: 40px; font-weight: 900; color: var(--red); border-right: 2.5px solid var(--ink); background: #FFF7F5; font-variant-numeric: tabular-nums; }
+.tcard-body { padding: 20px 24px; flex:1; min-width:0; }
+.tcard-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+.tcard-name { font-family: "SFMono-Regular", Consolas, "Courier New", monospace; font-size: 19px; font-weight: 800; }
+.tcard-name:hover { color: var(--blue); text-decoration: underline; }
+.tcard-sum { font-size: 15px; line-height: 1.7; color: #2b2f36; margin-bottom: 12px; }
+.tcard-meta { display:flex; gap:10px; flex-wrap:wrap; }
+.chip { display:inline-block; font-size:12px; font-weight:800; padding:4px 12px; border:2px solid var(--ink); }
+.chip-lang { background: var(--yellow); }
+.chip-star { background: var(--ink); color:#fff; border-color: var(--ink); }
+.chip-today { background: var(--red); color:#fff; border-color: var(--red); }
+.chip-plain { background:#fff; }
+
+/* ===== 论文 / 快讯卡片 ===== */
+.grid { display:grid; gap:20px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.pcard { display:block; background: var(--paper); border: 2.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: 22px; transition: transform .15s ease, box-shadow .15s ease; }
+.pcard:hover { transform: translate(-2px,-2px); box-shadow: 9px 9px 0 var(--ink); }
+.ptag { display:inline-block; font-size:11px; font-weight:900; letter-spacing:.2em; padding:4px 10px; margin-bottom:12px; background: var(--blue); color:#fff; }
+.ptag.red { background: var(--red); }
+.ptag.dark { background: var(--ink); }
+.pcard h3 { font-size:17px; font-weight:900; line-height:1.45; margin-bottom:8px; }
+.pcard p { font-size:13.5px; line-height:1.65; color:#3a3f47; }
+.pcard .src { display:block; margin-top:12px; font-size:11px; font-weight:800; letter-spacing:.15em; color:#8a8f98; }
+
+/* ===== 页脚 ===== */
+.footer { margin-top: 72px; background: var(--ink); color:#fff; }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; gap:20px; padding: 30px 0; flex-wrap:wrap; }
+.footer .big { font-size:22px; font-weight:900; letter-spacing:.06em; }
+.footer .small { font-size:12px; color:#9aa0a8; line-height:1.8; }
+.footer .red { color: var(--red); }
+
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .tcard-rank { flex-basis: 60px; font-size: 28px; }
+  .masthead-inner { padding: 30px 0 26px; }
+}
+@media print {
+  .tcard, .pcard { box-shadow:none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top"></div>
+  <svg class="deco" width="260" height="150" viewBox="0 0 260 150" fill="none">
+    <circle cx="210" cy="40" r="26" fill="#E8442E"/>
+    <rect x="120" y="90" width="46" height="46" fill="#FFC53D" stroke="#14161A" stroke-width="4"/>
+    <path d="M30 120 L70 60 L110 120 Z" fill="none" stroke="#14161A" stroke-width="5"/>
+    <line x1="0" y1="30" x2="90" y2="30" stroke="#14161A" stroke-width="5"/>
+  </svg>
+  <div class="wrap masthead-inner">
+    <div>
+      <div class="kicker">DAILY BRIEFING</div>
+      <h1>AI 每日<span class="thin">早报</span></h1>
+    </div>
+    <div class="masthead-meta">
+      <span class="meta-chip hot">2026-11-16 · 星期一</span>
+      <span class="meta-chip">生成时间 16:57 (北京时间)</span>
+      <span class="meta-chip">GitHub · HuggingFace · HackerNews</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2 class="sec-title">GitHub 热门项目</h2>
+      <span class="sec-en">Trending Top 10</span>
+    </div>
+    <article class="tcard"><div class="tcard-rank">01</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/dream-num/univer" target="_blank" rel="noopener">dream-num//univer</a></div><p class="tcard-sum">使用 Univer Office SDK 构建您自己的 AI 办公套件。将编辑、计算、协作和文件处理功能集成到您的产品中，供人员和 AI 代理使用。基于可扩展的开源核心构建。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 26,710</span><span class="chip chip-today">今日 +988</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">02</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/ag-ui-protocol/ag-ui" target="_blank" rel="noopener">ag-ui-protocol//ag-ui</a></div><p class="tcard-sum">AG-UI：代理与用户交互协议。将代理引入前端应用程序。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 18,225</span><span class="chip chip-today">今日 +355</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">03</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/google-labs-code/stitch-skills" target="_blank" rel="noopener">google-labs-code//stitch-skills</a></div><p class="tcard-sum">一个专为与 Stitch MCP 服务器配合使用的 Agent Skills 库。每项技能均遵循 Agent Skills 开放标准，以兼容 Antigravity、Gemini CLI、Claude Code、Cursor 等编码代理。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 9,510</span><span class="chip chip-today">今日 +247</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">04</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/backnotprop/plannotator" target="_blank" rel="noopener">backnotprop//plannotator</a></div><p class="tcard-sum">用于随时掌握最新动态并掌控代理的工作空间——塑造、决策、规划、注释、审核代码、与团队共享，并一键将所有反馈发送给代理。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 12,122</span><span class="chip chip-today">今日 +866</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">05</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/ChromeDevTools/chrome-devtools-mcp" target="_blank" rel="noopener">ChromeDevTools//chrome-devtools-mcp</a></div><p class="tcard-sum">适用于编码代理的 Chrome DevTools</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 57,301</span><span class="chip chip-today">今日 +717</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">06</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener">alibaba//open-code-review</a></div><p class="tcard-sum">安全、快速、高效，在阿里巴巴的规模下经过实战检验。混合架构代码审查工具：确定性管道 + LLM 代理、精确的行级注释、内置多语言规则集（NPE、线程安全、XSS、SQL 注入），兼容 OpenAI 和 Anthropic。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 52,501</span><span class="chip chip-today">今日 +691</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">07</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/Tencent/LoopForge" target="_blank" rel="noopener">Tencent//LoopForge</a></div><p class="tcard-sum">用于交付编码代理的自托管工作流。使用脚本和人工审批关卡编排 CodeBuddy、Codex 和 Claude Code。包括用于编码助手的本地工作流。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 2,021</span><span class="chip chip-today">今日 +423</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">08</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/ggml-org/ggml" target="_blank" rel="noopener">ggml-org//ggml</a></div><p class="tcard-sum">用于机器学习的张量库</p><div class="tcard-meta"><span class="chip chip-lang">C++</span><span class="chip chip-star">★ 16,025</span><span class="chip chip-today">今日 +43</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">09</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank" rel="noopener">elementalsouls//Claude-BugHunter</a></div><p class="tcard-sum">用于漏洞挖掘和外部红队工作的Claude Code技能包——82项技能、15个斜杠命令、681个披露报告模式（涵盖24个核心漏洞类别），以及企业身份+基础设施攻击矩阵。</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 6,865</span><span class="chip chip-today">今日 +98</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">10</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/GoogleChrome/modern-web-guidance-src" target="_blank" rel="noopener">GoogleChrome//modern-web-guidance-src</a></div><p class="tcard-sum">让您的编码代理始终掌握最新的网络最佳实践</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 7,582</span><span class="chip chip-today">今日 +1,219</span></div></div></article>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2 class="sec-title">HuggingFace 每日论文</h2>
+      <span class="sec-en">Daily Papers</span>
+    </div>
+    <div class="grid grid-3">
+      <a class="pcard" href="https://huggingface.co/papers/2611.18397" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>Gamer：用于长时程实时游戏智能体的通用视觉-语言-动作基础模型</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.18359" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>展望自主机器人：机器人系统的新时代</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.15789" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>VibePrevisBench：评估 Blender 中 4D 场景生成的智能体编码</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.18482" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>MMFlash：用于视觉-语言模型的更快推测解码</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.18549" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>JVT：Just Video Transformer 让像素空间视频扩散变得简单</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.18338" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>MEM-SQL：内存增强型文本转 SQL</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2 class="sec-title">AI / 技术快讯</h2>
+      <span class="sec-en">HackerNews Digest</span>
+    </div>
+    <div class="grid grid-2">
+      <a class="pcard" href="https://qwen.ai/blog?id=qwen4-max" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Qwen4-Max</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www.youtube.com/watch?v=7_JF3etiAv8" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>关于厄尔尼诺现象原理的简短说明[视频]</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://baron.by.dai.studio/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>使用种子生成地形的WebGL飞行模拟器</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://forum.torproject.org/t/security-release-0-4-9-17/22454" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>面对持续的DDoS攻击，Tor项目发布快速响应的DoS防御补丁</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://tangled.org/rockorager.dev/parcel" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Parcel：使用Zig构建的Linux桌面邮件客户端</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www.spacex.com/launches/starship-flight-15" target="_blank" rel="noopener"><span class="ptag dark">TECH</span><h3>SpaceX 成功接住星舰，结束第 15 次飞行</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www1.wdr.de/nrw/rheinland/rhein-erft-kreis/technischer-defekt-chlor-phantasialand-100.html" target="_blank" rel="noopener"><span class="ptag dark">TECH</span><h3>Microsoft 365 服务中断导致 15 名酒店住客氯气中毒</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://iter.ca/post/ubo-uxss/" target="_blank" rel="noopener"><span class="ptag dark">TECH</span><h3>uBlock Origin 中由网站驱动的元素选择器存在通用 XSS 漏洞</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="big">AI 每日早报 <span class="red">●</span></div>
+      <div class="small">自动化生成 · GitHub Actions 每日 10:00 (北京时间) · 摘要由开源模型生成</div>
+    </div>
+    <div class="small">数据源: GitHub Trending / HuggingFace Papers / HackerNews<br>2026-11-16 · 星期一</div>
+  </div>
+</footer>
+
+</body>
+</html>
