@@ -332,6 +332,9 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
 @media (max-width: 860px) {{
   .grid-3 {{ grid-template-columns: 1fr 1fr; }}
   .grid-2 {{ grid-template-columns: 1fr; }}
+  .masthead-inner {{ flex-direction: column; align-items: flex-start; gap: 20px; padding: 40px 0 28px; }}
+  .masthead-meta {{ padding-bottom: 0; }}
+  .meta-chip {{ max-width: 100%; overflow-wrap: anywhere; }}
 }}
 @media (max-width: 600px) {{
   .grid-3 {{ grid-template-columns: 1fr; }}
