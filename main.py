@@ -250,6 +250,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E8442E'/%3E%3Crect x='14' y='16' width='36' height='6' fill='%23fff'/%3E%3Crect x='14' y='29' width='36' height='4' fill='%23fff'/%3E%3Crect x='14' y='38' width='24' height='4' fill='%23fff'/%3E%3Crect x='14' y='47' width='30' height='4' fill='%23fff'/%3E%3C/svg%3E">
 <title>AI 每日早报 · {date}</title>
 <style>
 :root {{
@@ -401,7 +402,7 @@ h1 .thin {{ font-weight: 200; }}
   <div class="wrap footer-inner">
     <div>
       <div class="big">AI 每日早报 <span class="red">●</span></div>
-      <div class="small">自动化生成 · GitHub Actions 每日 10:00 (北京时间) · 摘要由开源模型生成</div>
+      <div class="small">自动化生成 · 每日 10:00 前后自动更新 · 摘要由开源模型生成</div>
     </div>
     <div class="small">数据源: GitHub Trending / HuggingFace Papers / HackerNews<br>{date} · 星期{week}</div>
   </div>
