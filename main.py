@@ -276,7 +276,7 @@ a {{ color: inherit; text-decoration: none; }}
 /* ===== 头部 ===== */
 .masthead {{ background: var(--paper); border-bottom: 1px solid var(--line); position: relative; overflow: hidden; }}
 .masthead-top {{ height: 3px; background: var(--accent); opacity: .45; }}
-.masthead-inner {{ display:flex; justify-content:space-between; align-items:flex-end; padding: 56px 0 40px; gap: 40px; flex-wrap: wrap; }}
+.masthead-inner {{ display:flex; justify-content:space-between; align-items:flex-end; padding-top: 56px; padding-bottom: 40px; gap: 40px; flex-wrap: wrap; }}
 .kicker {{ display:inline-flex; align-items:center; font-size:12px; font-weight:600; letter-spacing:.42em; color: var(--muted); margin-bottom: 18px; }}
 .kicker::before {{ content:""; width:24px; height:1px; background: var(--accent); display:inline-block; margin-right: 12px; }}
 h1 {{ font-family: var(--serif); font-size: clamp(44px, 6.6vw, 78px); font-weight: 600; line-height: 1.08; letter-spacing: .06em; }}
@@ -332,14 +332,14 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
 @media (max-width: 860px) {{
   .grid-3 {{ grid-template-columns: 1fr 1fr; }}
   .grid-2 {{ grid-template-columns: 1fr; }}
-  .masthead-inner {{ flex-direction: column; align-items: flex-start; gap: 20px; padding: 40px 0 28px; }}
+  .masthead-inner {{ flex-direction: column; align-items: flex-start; gap: 20px; padding-top: 40px; padding-bottom: 28px; }}
   .masthead-meta {{ padding-bottom: 0; }}
   .meta-chip {{ max-width: 100%; overflow-wrap: anywhere; }}
 }}
 @media (max-width: 600px) {{
   .grid-3 {{ grid-template-columns: 1fr; }}
   .tcard-rank {{ flex-basis: 60px; font-size: 28px; }}
-  .masthead-inner {{ padding: 30px 0 26px; }}
+  .masthead-inner {{ padding-top: 30px; padding-bottom: 26px; }}
 }}
 @media print {{
   .tcard, .pcard {{ box-shadow:none; break-inside: avoid; }}
