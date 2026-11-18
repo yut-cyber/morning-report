@@ -33,7 +33,10 @@ jobs:
         id: guard
         run: |
           today=$(TZ=Asia/Shanghai date +%F)
-          if [ -f "docs/archive/${today}.html" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "手动触发, 强制生成 ${today} 的早报"
+          elif [ -f "docs/archive/${today}.html" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "今天的早报已存在 (${today}), 跳过本次运行"
           else
