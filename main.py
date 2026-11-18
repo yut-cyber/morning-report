@@ -11,7 +11,9 @@ import re
 import sys
 import time
 import traceback
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from html import escape
 from urllib.parse import quote
 
@@ -49,6 +51,30 @@ AI_KEYWORDS = [
     "qwen", "model", "agent", "neural", "diffusion", "transformer", "inference",
     "fine-tune", "rag", "multimodal", "robot", "token", "prompt",
 ]
+
+# 语音算法板块的筛选词: 严格词命中即判定为 ASR, 严格词不足时放宽到语音/音频软词
+ASR_STRICT_PHRASES = [
+    "speech recognition", "speech-to-text", "speech to text", "whisper",
+    "wav2vec", "conformer", "transducer", "speaker diarization", "diarization",
+    "keyword spotting", "speech translation", "speech llm", "audio llm",
+    "voice activity", "streaming speech", "acoustic model", "speech enhancement",
+    "speech understanding", "speech language model", "语音识别", "流式识别", "说话人分离",
+    "语音大模型", "声学模型", "热词", "端到端语音",
+]
+# 短缩写需按词边界匹配, 避免 vad 命中 vader、ctc 命中散串
+ASR_SHORT_RE = re.compile(r"\b(asr|ctc|vad|stt|wer)\b")
+ASR_SOFT_PHRASES = [
+    "speech", "audio", "voice", "vocoder", "speaker", "acoustic", "asr",
+    "语音", "音频", "声学", "降噪", "麦克风", "声纹",
+]
+
+
+def asr_hits(text):
+    """返回 (严格命中数, 软命中数), 用于判定与排序语音算法相关度。"""
+    low = text.lower()
+    strict = sum(1 for k in ASR_STRICT_PHRASES if k in low) + len(ASR_SHORT_RE.findall(low))
+    soft = sum(1 for k in ASR_SOFT_PHRASES if k in low)
+    return strict, soft
 
 
 # ---------- 数据抓取 ----------
@@ -120,8 +146,170 @@ def fetch_hackernews(limit=8):
     return picked
 
 
+# ---------- 语音算法 / ASR 抓取 ----------
+# 用 arXiv 官方 RSS(按日更新)代替 API 查询, 更快也更稳; 两个分类合并去重
+ARXIV_FEEDS = (
+    "https://rss.arxiv.org/rss/cs.SD",
+    "https://rss.arxiv.org/rss/eess.AS",
+)
+
+
+def fetch_arxiv_asr(limit=40, days=5):
+    """抓 arXiv 声学/语音两大分类的最新投稿, 严格命中优先, 不足时保留软匹配。"""
+    cutoff = NOW - timedelta(days=days)
+    items, seen = [], set()
+    for feed in ARXIV_FEEDS:
+        resp = None
+        for attempt in range(2):
+            try:
+                resp = requests.get(feed, headers=UA, timeout=TIMEOUT + 10)
+                resp.raise_for_status()
+                break
+            except Exception as e:
+                resp = None
+                print(f"[asr] arXiv RSS 失败({attempt + 1}/2): {e}")
+                time.sleep(2)
+        if resp is None:
+            continue
+        try:
+            root = ET.fromstring(resp.content)
+        except ET.ParseError as e:
+            print(f"[asr] arXiv RSS 解析失败: {e}")
+            continue
+        for node in root.findall("./channel/item"):
+            title = " ".join((node.findtext("title") or "").split())
+            url = (node.findtext("link") or "").strip()
+            desc = " ".join((node.findtext("description") or "").split())
+            guid = (node.findtext("guid") or url).strip()
+            if not title or not url or guid in seen:
+                continue
+            # description 形如 "arXiv:2411.xxxx Announce Type: new Abstract: ..."
+            abstract = desc.split("Abstract:", 1)[1].strip() if "Abstract:" in desc else desc
+            try:
+                dt = parsedate_to_datetime(node.findtext("pubDate") or "")
+            except (TypeError, ValueError):
+                dt = NOW
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=BJT)
+            if dt < cutoff:
+                continue
+            strict, soft = asr_hits(title + " " + abstract)
+            if not strict and not soft:
+                continue
+            seen.add(guid)
+            items.append({
+                "title": title,
+                "url": url,
+                "source": "ARXIV",
+                "date": dt.astimezone(BJT).strftime("%m-%d"),
+                "abstract": abstract,
+                "tag": "ASR" if strict else "AUDIO",
+                "score": strict * 3 + soft,
+                "ts": dt.timestamp(),
+            })
+    items.sort(key=lambda x: (x["score"], x["ts"]), reverse=True)
+    return items[:limit]
+
+
+def fetch_hn_asr(limit=8, days=5):
+    """HN 近期讨论中检索语音识别相关条目, 补充工程与产品动态。"""
+    since = int((NOW - timedelta(days=days)).timestamp())
+    out, seen = [], set()
+    for query in ("speech recognition", "whisper asr"):
+        resp = requests.get(
+            "https://hn.algolia.com/api/v1/search",
+            params={
+                "query": query,
+                "tags": "story",
+                "hitsPerPage": 15,
+                "numericFilters": f"created_at_i>{since}",
+            },
+            headers=UA,
+            timeout=TIMEOUT,
+        )
+        resp.raise_for_status()
+        for h in resp.json().get("hits", []):
+            title = " ".join((h.get("title") or "").split())
+            object_id = h.get("objectID")
+            if not title or not object_id or object_id in seen:
+                continue
+            strict, soft = asr_hits(title)
+            if not strict and not soft:
+                continue
+            seen.add(object_id)
+            created = h.get("created_at") or ""
+            try:
+                dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            except ValueError:
+                dt = NOW
+            out.append({
+                "title": title,
+                "url": h.get("url") or f"https://news.ycombinator.com/item?id={object_id}",
+                "source": "HN",
+                "date": dt.astimezone(BJT).strftime("%m-%d"),
+                "abstract": "",
+                "tag": "ASR" if strict else "AUDIO",
+                "score": strict * 3 + soft + (1 if (h.get("points") or 0) >= 50 else 0),
+                "ts": dt.timestamp(),
+            })
+    out.sort(key=lambda x: (x["score"], x["ts"]), reverse=True)
+    return out[:limit]
+
+
+def filter_hf_asr(papers, limit=6):
+    """从已抓取的 HuggingFace 论文中筛出语音算法相关条目, 不额外发请求。"""
+    out = []
+    for p in papers:
+        strict, soft = asr_hits(p["title"])
+        if not strict and not soft:
+            continue
+        out.append({
+            "title": p["title"],
+            "url": p["url"],
+            "source": "HF",
+            "date": NOW.astimezone(BJT).strftime("%m-%d"),
+            "abstract": "",
+            "tag": "ASR" if strict else "AUDIO",
+            "score": strict * 3 + soft,
+            "ts": NOW.timestamp(),
+        })
+    out.sort(key=lambda x: x["score"], reverse=True)
+    return out[:limit]
+
+
+def dedupe_asr(items, limit=6):
+    """标题归一化去重, 按相关度与时间排序后截断。"""
+    seen, out = set(), []
+    for it in sorted(items, key=lambda x: (x["score"], x["ts"]), reverse=True):
+        key = re.sub(r"[^a-z0-9\u4e00-\u9fff]+", "", it["title"].lower())[:90]
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(it)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def fetch_asr_news(hf_papers, limit=6):
+    """语音算法新闻: arXiv 为主, 叠加 HN 与 HF 命中; 单源失败不影响整体。"""
+    items = []
+    for name, fn in (
+        ("arXiv", lambda: fetch_arxiv_asr()),
+        ("HackerNews", lambda: fetch_hn_asr()),
+        ("HuggingFace", lambda: filter_hf_asr(hf_papers)),
+    ):
+        try:
+            part = fn()
+            print(f"[asr] {name} 命中 {len(part)} 条")
+            items.extend(part)
+        except Exception as e:
+            print(f"[asr] {name} 抓取失败, 跳过: {e}")
+    return dedupe_asr(items, limit)
+
+
 # ---------- 中文摘要层 ----------
-def llm_summarize(trending, papers, news):
+def llm_summarize(trending, papers, asr, news):
     """OpenRouter 免费模型: 全板块中文标题+一句话摘要。失败返回 None。"""
     if not OPENROUTER_API_KEY:
         print("[llm] 未配置 OPENROUTER_API_KEY, 使用免费翻译兜底")
@@ -132,18 +320,25 @@ def llm_summarize(trending, papers, news):
     lines.append("\nHuggingFace Papers:")
     for i, p in enumerate(papers):
         lines.append(f"{i}. {p['title']}")
+    if asr:
+        lines.append("\n语音算法 / ASR:")
+        for i, a in enumerate(asr):
+            abstract = (a.get("abstract") or "")[:200]
+            lines.append(f"{i}. [{a['source']}] {a['title']} | {abstract}")
     lines.append("\nHackerNews:")
     for i, n in enumerate(news):
         lines.append(f"{i}. {n['title']}")
     prompt = (
         "你是资深技术编辑, 为中文技术早报撰写内容。根据以下素材, 输出严格 JSON(不要输出其他任何内容):\n"
         '{"trending": [{"summary": "..."}], "papers": [{"title_cn": "...", "summary": "..."}], '
+        '"asr": [{"title_cn": "...", "summary": "..."}], '
         '"news": [{"title_cn": "...", "summary": "..."}]}\n'
         "要求:\n"
         "1. 数组顺序、数量必须与输入一一对应;\n"
         "2. summary 为简体中文一句话(<=40字), 说清这个项目/论文/新闻是做什么的、为什么值得关注;\n"
         "3. title_cn 为中文短标题(<=18字), 专有名词可保留英文;\n"
-        "4. 合并语义重复的内容(在对应 summary 中注明'与X相关'), 不要遗漏。\n\n"
+        "4. 合并语义重复的内容(在对应 summary 中注明'与X相关'), 不要遗漏;\n"
+        "5. asr 板块聚焦语音识别相关技术点(声学模型、解码、流式、说话人、语音大模型), 避免泛泛而谈。\n\n"
         + "\n".join(lines)
     )
     try:
@@ -183,7 +378,7 @@ def llm_summarize(trending, papers, news):
                 except json.JSONDecodeError:
                     print(f"[llm] {model} JSON 解析失败, 跳过")
                     continue
-                if data.get("trending") or data.get("papers") or data.get("news"):
+                if data.get("trending") or data.get("papers") or data.get("asr") or data.get("news"):
                     print(f"[llm] 使用模型: {model}")
                     return data
                 print(f"[llm] {model} JSON 内容为空, 跳过")
@@ -219,10 +414,11 @@ def translate_zh(text):
     return zh
 
 
-def apply_summaries(trending, papers, news):
-    data = llm_summarize(trending, papers, news)
+def apply_summaries(trending, papers, asr, news):
+    data = llm_summarize(trending, papers, asr, news)
     ts = data.get("trending", []) if data else []
     ps = data.get("papers", []) if data else []
+    ass = data.get("asr", []) if data else []
     ns = data.get("news", []) if data else []
     for i, t in enumerate(trending):
         if i < len(ts) and ts[i].get("summary"):
@@ -236,6 +432,13 @@ def apply_summaries(trending, papers, news):
         else:
             p["title_cn"] = translate_zh(p["title"])
             p["summary"] = ""
+    for i, a in enumerate(asr):
+        if i < len(ass) and ass[i].get("title_cn"):
+            a["title_cn"] = ass[i]["title_cn"]
+            a["summary"] = ass[i].get("summary", "")
+        else:
+            a["title_cn"] = translate_zh(a["title"])
+            a["summary"] = ""
     for i, n in enumerate(news):
         if i < len(ns) and ns[i].get("title_cn"):
             n["title_cn"] = ns[i]["title_cn"]
@@ -243,7 +446,7 @@ def apply_summaries(trending, papers, news):
         else:
             n["title_cn"] = translate_zh(n["title"])
             n["summary"] = ""
-    return trending, papers, news
+    return trending, papers, asr, news
 
 
 # ---------- HTML 模板 ----------
@@ -324,6 +527,12 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
 .pcard p {{ font-size:13.5px; line-height:1.8; color: var(--ink-soft); }}
 .pcard .src {{ display:block; margin-top:16px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }}
 
+/* ===== 语音算法 / ASR ===== */
+.ameta {{ display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }}
+.ameta .badge {{ display:inline-block; font-size:10px; font-weight:600; letter-spacing:.2em; padding:2px 7px; color: var(--accent); border:1px solid #E3D5C8; }}
+.ameta .badge.audio {{ color: var(--muted); border-color: var(--line); }}
+.acard h3 {{ margin-top:0; }}
+
 /* ===== 页脚 ===== */
 .footer {{ margin-top: 88px; background: var(--paper); border-top: 1px solid var(--line); color: var(--ink); }}
 .footer-inner {{ display:flex; justify-content:space-between; align-items:center; gap:20px; padding: 38px 0; flex-wrap:wrap; }}
@@ -360,7 +569,7 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
     <div class="masthead-meta">
       <span class="meta-chip hot">{date} · 星期{week}</span>
       <span class="meta-chip">生成时间 {time} (北京时间)</span>
-      <span class="meta-chip">GitHub · HuggingFace · HackerNews</span>
+      <span class="meta-chip">GitHub · HuggingFace · arXiv · HackerNews</span>
     </div>
   </div>
 </header>
@@ -387,9 +596,11 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
     </div>
   </section>
 
+{asr_section}
+
   <section class="section">
     <div class="sec-head">
-      <span class="sec-no">03</span>
+      <span class="sec-no">{news_no}</span>
       <h2 class="sec-title">AI / 技术快讯</h2>
       <span class="sec-en">HackerNews Digest</span>
     </div>
@@ -406,7 +617,7 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
       <div class="big">AI 每日早报 <span class="red">●</span></div>
       <div class="small">自动化生成 · 每日 10:00 前后自动更新 · 摘要由开源模型生成</div>
     </div>
-    <div class="small">数据源: GitHub Trending / HuggingFace Papers / HackerNews<br>{date} · 星期{week}</div>
+    <div class="small">数据源: GitHub Trending / HuggingFace Papers / arXiv cs.SD·eess.AS / HackerNews<br>{date} · 星期{week}</div>
   </div>
 </footer>
 
@@ -415,7 +626,36 @@ h1 .thin {{ font-weight: 300; color: var(--ink-soft); }}
 """
 
 
-def build_html(trending, papers, news):
+def build_asr_section(asr):
+    """语音算法板块: 无命中时整段不渲染, 快讯编号自动回退为 03。"""
+    if not asr:
+        return ""
+    cards = []
+    for a in asr:
+        tag = a.get("tag", "ASR")
+        badge_cls = "badge" if tag == "ASR" else "badge audio"
+        cards.append(
+            f'<a class="pcard acard" href="{escape(a["url"])}" target="_blank" rel="noopener">'
+            f'<span class="ameta"><i class="{badge_cls}">{escape(tag)}</i>'
+            f'<span>{escape(a.get("source", ""))}</span>'
+            f'<span>{escape(a.get("date", ""))}</span></span>'
+            f'<h3>{escape(a.get("title_cn") or a["title"])}</h3>'
+            f'<p>{escape(a.get("summary", ""))}</p>'
+            f'<span class="src">{escape(a.get("source", ""))}</span></a>'
+        )
+    return (
+        '  <section class="section">\n'
+        '    <div class="sec-head">\n'
+        '      <span class="sec-no">03</span>\n'
+        '      <h2 class="sec-title">语音算法 · ASR 前沿</h2>\n'
+        '      <span class="sec-en">Speech &amp; Audio</span>\n'
+        '    </div>\n'
+        '    <div class="grid grid-3">\n      ' + "\n      ".join(cards) + "\n    </div>\n"
+        "  </section>"
+    )
+
+
+def build_html(trending, papers, asr, news):
     t_html = []
     for i, t in enumerate(trending, 1):
         chips = []
@@ -460,6 +700,8 @@ def build_html(trending, papers, news):
         date=DATE_STR, week=WEEK_CN, time=TIME_STR,
         trending_html="\n".join(t_html),
         papers_html="\n".join(p_html),
+        asr_section=build_asr_section(asr),
+        news_no="04" if asr else "03",
         news_html="\n".join(n_html),
     )
 
@@ -487,7 +729,7 @@ def push_wechat(title, content, template="markdown"):
     return False
 
 
-def build_push_card(trending, papers, news):
+def build_push_card(trending, papers, asr, news):
     """微信推送 HTML 卡片(报纸风, 全内联样式, 匹配看板配色)"""
     INK, PAPER, BG, RED, BLUE, YELLOW, MUTED = "#14161A", "#FFFFFF", "#F6F5F1", "#E8442E", "#1D4ED8", "#FFC53D", "#8a8f98"
 
@@ -546,6 +788,20 @@ def build_push_card(trending, papers, news):
             f'<a href="{escape(p["url"])}" style="font-weight:800;font-size:14px;color:{INK};text-decoration:none;line-height:1.5;">{title}</a></div>'
             f'{summary_html}</div>'
         )
+    # 语音算法 / ASR
+    if asr:
+        H.append(f'<div style="margin:20px 0 2px;font-size:17px;font-weight:900;color:{INK};">🎙 语音 / ASR</div>')
+        for a in asr[:3]:
+            title = escape(a.get("title_cn") or a["title"])
+            summary = escape(a.get("summary", ""))
+            summary_html = f'<div style="margin-top:6px;font-size:12.5px;color:#3a3f47;line-height:1.6;">{summary}</div>' if summary else ""
+            tag = chip(a.get("tag", "ASR"), YELLOW, INK)
+            H.append(
+                f'<div style="background:{PAPER};border:1px solid {INK};border-radius:8px;padding:12px 14px;margin-top:10px;">'
+                f'<div>{tag}'
+                f'<a href="{escape(a["url"])}" style="font-weight:700;font-size:14px;color:{INK};text-decoration:none;line-height:1.5;">{title}</a></div>'
+                f'{summary_html}</div>'
+            )
     # 快讯
     H.append(f'<div style="margin:20px 0 2px;font-size:17px;font-weight:900;color:{INK};">⚡ 技术 / AI 快讯</div>')
     for n in news[:5]:
@@ -561,7 +817,7 @@ def build_push_card(trending, papers, news):
     # 页脚
     H.append(
         f'<div style="background:{INK};color:{MUTED};font-size:11px;padding:14px 16px;line-height:1.8;">'
-        f'数据源: GitHub Trending · HuggingFace Papers · HackerNews<br>'
+        f'数据源: GitHub Trending · HuggingFace Papers · arXiv cs.SD/eess.AS · HackerNews<br>'
         f'摘要由开源模型生成 · {DATE_STR} 星期{WEEK_CN}</div></div>'
     )
     return "".join(H)
@@ -571,13 +827,15 @@ def build_push_card(trending, papers, news):
 def main():
     print(f"=== 生成 {DATE_STR} 早报 ===")
     trending = fetch_github_trending()
-    papers = fetch_hf_papers()
+    papers_all = fetch_hf_papers(limit=24)
+    papers = papers_all[:6]
     news = fetch_hackernews()
-    print(f"抓取完成: trending={len(trending)}, papers={len(papers)}, hn={len(news)}")
+    asr = fetch_asr_news(papers_all)
+    print(f"抓取完成: trending={len(trending)}, papers={len(papers)}, asr={len(asr)}, hn={len(news)}")
 
-    trending, papers, news = apply_summaries(trending, papers, news)
+    trending, papers, asr, news = apply_summaries(trending, papers, asr, news)
 
-    html = build_html(trending, papers, news)
+    html = build_html(trending, papers, asr, news)
     os.makedirs(DOCS_DIR, exist_ok=True)
     index_path = os.path.join(DOCS_DIR, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
@@ -588,7 +846,7 @@ def main():
         f.write(html)
     print(f"页面已生成: {index_path}")
 
-    card = build_push_card(trending, papers, news)
+    card = build_push_card(trending, papers, asr, news)
     ok = push_wechat(f"AI 早报 {DATE_STR}", card, template="html")
     if not ok and PUSHPLUS_TOKEN:
         push_wechat(f"⚠️ 早报推送异常 {DATE_STR}", "正文推送失败, 请检查 GitHub Actions 日志。")

@@ -8,6 +8,7 @@
 |---|---|---|
 | GitHub Trending | 热门开源项目（名称/描述/星数/今日新增） | Top 10 |
 | HuggingFace Papers | 每日热门 AI 论文 | 6 篇 |
+| arXiv cs.SD / eess.AS | 语音算法与 ASR 前沿（识别、声学、说话人、语音大模型），不足时放宽到语音/音频 | 6 条 |
 | HackerNews | 技术/AI 快讯（AI 相关优先） | 8 条 |
 
 所有内容通过 OpenRouter 免费大模型生成**中文一句话摘要**（未配置 key 时自动降级为免费机器翻译），然后：
@@ -53,7 +54,7 @@ python main.py
 
 ```
 GitHub Actions cron (UTC 02:00 = 北京 10:00)
-  → main.py 抓取三个数据源
+  → main.py 抓取四个数据源
   → OpenRouter 免费模型生成中文摘要（失败自动降级翻译）
   → 写入 docs/index.html + docs/archive/日期.html，bot 自动提交
   → PushPlus 推送 Markdown 卡片到微信
