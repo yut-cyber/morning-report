@@ -75,6 +75,12 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
 .pcard p { font-size:13.5px; line-height:1.8; color: var(--ink-soft); }
 .pcard .src { display:block; margin-top:16px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }
 
+/* ===== 语音算法 / ASR ===== */
+.ameta { display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }
+.ameta .badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:.2em; padding:2px 7px; color: var(--accent); border:1px solid #E3D5C8; }
+.ameta .badge.audio { color: var(--muted); border-color: var(--line); }
+.acard h3 { margin-top:0; }
+
 /* ===== 页脚 ===== */
 .footer { margin-top: 88px; background: var(--paper); border-top: 1px solid var(--line); color: var(--ink); }
 .footer-inner { display:flex; justify-content:space-between; align-items:center; gap:20px; padding: 38px 0; flex-wrap:wrap; }
@@ -110,8 +116,8 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
     </div>
     <div class="masthead-meta">
       <span class="meta-chip hot">2026-11-18 · 星期三</span>
-      <span class="meta-chip">生成时间 14:16 (北京时间)</span>
-      <span class="meta-chip">GitHub · HuggingFace · HackerNews</span>
+      <span class="meta-chip">生成时间 16:43 (北京时间)</span>
+      <span class="meta-chip">GitHub · HuggingFace · arXiv · HackerNews</span>
     </div>
   </div>
 </header>
@@ -124,16 +130,16 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
       <h2 class="sec-title">GitHub 热门项目</h2>
       <span class="sec-en">Trending Top 10</span>
     </div>
-    <article class="tcard"><div class="tcard-rank">01</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank" rel="noopener">elementalsouls/Claude-BugHunter</a></div><p class="tcard-sum">用于漏洞挖掘和外部红队工作的Claude Code技能包——82项技能、15个斜杠命令、681个披露报告模式（涵盖24个核心漏洞类别），以及企业身份+基础设施攻击矩阵。</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 9,775</span><span class="chip chip-today">今日 +1,005</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">02</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/mvanhorn/last30days-skill" target="_blank" rel="noopener">mvanhorn/last30days-skill</a></div><p class="tcard-sum">一种 AI 代理技能，可在 Reddit、X、YouTube、HN、Polymarket 和网络上研究任何主题，然后综合生成有事实依据的摘要</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 69,332</span><span class="chip chip-today">今日 +696</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">03</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener">alibaba/open-code-review</a></div><p class="tcard-sum">安全、快速、高效，经阿里巴巴规模的实战检验。混合架构代码审查工具：确定性管道 + LLM 代理、精确的行级注释、内置多语言规则集（NPE、线程安全、XSS、SQL 注入），兼容 OpenAI 和 Anthropic。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 53,911</span><span class="chip chip-today">今日 +763</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">04</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/Tencent/LoopForge" target="_blank" rel="noopener">Tencent/LoopForge</a></div><p class="tcard-sum">用于交付编码代理的自托管工作流。使用脚本和人工审批关卡编排 CodeBuddy、Codex 和 Claude Code。包括用于编码助手的本地工作流。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 3,471</span><span class="chip chip-today">今日 +591</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">05</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/dream-num/univer" target="_blank" rel="noopener">dream-num/univer</a></div><p class="tcard-sum">使用 Univer Office SDK 构建您自己的 AI Office。将编辑、计算、协作和文件处理功能集成到您的产品中，供人和 AI 代理使用。基于可扩展的开源核心构建。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 29,318</span><span class="chip chip-today">今日 +1,774</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">06</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/getarcaneapp/arcane" target="_blank" rel="noopener">getarcaneapp/arcane</a></div><p class="tcard-sum">现代Docker管理，专为所有人设计</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 9,451</span><span class="chip chip-today">今日 +618</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">07</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/google-labs-code/stitch-skills" target="_blank" rel="noopener">google-labs-code/stitch-skills</a></div><p class="tcard-sum">一个专为与 Stitch MCP 服务器配合使用的 Agent Skills 库。每项技能均遵循 Agent Skills 开放标准，以兼容 Antigravity、Gemini CLI、Claude Code、Cursor 等编程代理。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 10,191</span><span class="chip chip-today">今日 +350</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">08</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a></div><p class="tcard-sum">Cursor 插件规范和官方插件</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 16,972</span><span class="chip chip-today">今日 +201</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">09</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a></div><p class="tcard-sum">一个行之有效的代理技能框架和软件开发方法。</p><div class="tcard-meta"><span class="chip chip-lang">Shell</span><span class="chip chip-star">★ 319,514</span><span class="chip chip-today">今日 +1,917</span></div></div></article>
-<article class="tcard"><div class="tcard-rank">10</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/ag-ui-protocol/ag-ui" target="_blank" rel="noopener">ag-ui-protocol/ag-ui</a></div><p class="tcard-sum">AG-UI：代理-用户交互协议。将代理引入前端应用程序。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 20,138</span><span class="chip chip-today">今日 +1,445</span></div></div></article>
+    <article class="tcard"><div class="tcard-rank">01</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank" rel="noopener">elementalsouls/Claude-BugHunter</a></div><p class="tcard-sum">用于漏洞挖掘和外部红队工作的Claude Code技能包——82项技能、15个斜杠命令、681个披露报告模式（涵盖24个核心漏洞类别），以及企业身份+基础设施攻击矩阵。</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 10,065</span><span class="chip chip-today">今日 +1,005</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">02</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/mvanhorn/last30days-skill" target="_blank" rel="noopener">mvanhorn/last30days-skill</a></div><p class="tcard-sum">一种 AI 代理技能，可在 Reddit、X、YouTube、HN、Polymarket 和网络上研究任何主题，然后综合生成有事实依据的摘要</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 69,450</span><span class="chip chip-today">今日 +696</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">03</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener">alibaba/open-code-review</a></div><p class="tcard-sum">安全、快速、高效，经阿里巴巴规模的实战检验。混合架构代码审查工具：确定性管道 + LLM 代理、精确的行级注释、内置多语言规则集（NPE、线程安全、XSS、SQL 注入），兼容 OpenAI 和 Anthropic。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 54,006</span><span class="chip chip-today">今日 +763</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">04</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/Tencent/LoopForge" target="_blank" rel="noopener">Tencent/LoopForge</a></div><p class="tcard-sum">用于交付编码代理的自托管工作流。使用脚本和人工审批关卡来协调 CodeBuddy、Codex 和 Claude Code。包括用于编码助手的本地工作流。</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 3,611</span><span class="chip chip-today">今日 +591</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">05</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/dream-num/univer" target="_blank" rel="noopener">dream-num/univer</a></div><p class="tcard-sum">使用 Univer Office SDK 构建您自己的 AI Office。将编辑、计算、协作和文件处理功能集成到您的产品中，供人和 AI 代理使用。基于可扩展的开源核心构建。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 29,625</span><span class="chip chip-today">今日 +1,774</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">06</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/getarcaneapp/arcane" target="_blank" rel="noopener">getarcaneapp/arcane</a></div><p class="tcard-sum">现代Docker管理，专为所有人设计</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 9,519</span><span class="chip chip-today">今日 +618</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">07</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/google-labs-code/stitch-skills" target="_blank" rel="noopener">google-labs-code/stitch-skills</a></div><p class="tcard-sum">一个专为与 Stitch MCP 服务器配合使用的 Agent Skill 库。每项技能均遵循 Agent Skills 开放标准，以兼容 Antigravity、Gemini CLI、Claude Code、Cursor 等编码代理。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 10,233</span><span class="chip chip-today">今日 +350</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">08</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a></div><p class="tcard-sum">Cursor 插件规范和官方插件</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 17,016</span><span class="chip chip-today">今日 +201</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">09</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a></div><p class="tcard-sum">行之有效的代理技能框架和软件开发方法。</p><div class="tcard-meta"><span class="chip chip-lang">Shell</span><span class="chip chip-star">★ 319,598</span><span class="chip chip-today">今日 +1,917</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">10</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/ag-ui-protocol/ag-ui" target="_blank" rel="noopener">ag-ui-protocol/ag-ui</a></div><p class="tcard-sum">AG-UI：代理与用户交互协议。将代理引入前端应用程序。</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 20,201</span><span class="chip chip-today">今日 +1,445</span></div></div></article>
   </section>
 
   <section class="section">
@@ -155,6 +161,22 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
   <section class="section">
     <div class="sec-head">
       <span class="sec-no">03</span>
+      <h2 class="sec-title">语音算法 · ASR 前沿</h2>
+      <span class="sec-en">Speech &amp; Audio</span>
+    </div>
+    <div class="grid grid-3">
+      <a class="pcard acard" href="https://arxiv.org/abs/2610.34156" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-18</span></span><h3>用于联合 ASR 和词级语音反欺骗的 ASR 保护融合和参考锚定策略优化</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.22627" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-18</span></span><h3>超越模仿：使用GRPO在未知说话人人数的情况下，对联合多说话人ASR和说话人角色划分进行受限探索</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.22628" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-18</span></span><h3>回归梅尔刻度：学习如何在生成式语音增强中弥合保真度和感知之间的鸿沟</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://ashbuk.dev/posts/linux-stt-benchmark/" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>HN</span><span>11-17</span></span><h3>Parakeet 与 Whisper 在 AMD 集成显卡上的对比：Linux 上的语音转文本基准测试</h3><p></p><span class="src">HN</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2609.16612" target="_blank" rel="noopener"><span class="ameta"><i class="badge audio">AUDIO</i><span>ARXIV</span><span>11-18</span></span><h3>跨声音的结构：使用冻结音频编码器，比较四种语音语料库的声学事件类型累积和序列依赖性</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2606.01264" target="_blank" rel="noopener"><span class="ameta"><i class="badge audio">AUDIO</i><span>ARXIV</span><span>11-18</span></span><h3>1000 小时的日语语音生成 EEG-EMG-音频数据集</h3><p></p><span class="src">ARXIV</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">04</span>
       <h2 class="sec-title">AI / 技术快讯</h2>
       <span class="sec-en">HackerNews Digest</span>
     </div>
@@ -163,10 +185,10 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
 <a class="pcard" href="https://runta.com/blog/introducing-frontierharness-eval-v1-1/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>每款车型最适合的线束是什么？</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
 <a class="pcard" href="https://microsoft.ai/news/introducing-mai-code-2-and-mai-code-2-flash/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>MAI 代码 2 和代码 2 闪烁</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
 <a class="pcard" href="https://revscope.co/blog/search-seo-geo-2026/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>谷歌的AI答案使搜索流量减少了40%</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://nicolasbouliane.com/blog/death-by-ai" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>人工智能正在扼杀《柏林万象》</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
 <a class="pcard" href="https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>哈佛大学研究人员发现，人工智能编码代理将瓶颈转移到了代码审查上</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
-<a class="pcard" href="https://starsling.dev" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>HN发布：StarSling（YC P25）——适用于代理规模代码仓库的自我改进型CI</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
 <a class="pcard" href="https://www.cerebras.ai/blog/cerebras-launches-disaggregated-inference" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Cerebras 分散式推理</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
-<a class="pcard" href="https://blog.cmpxchg8b.com/2012/09/fun-with-constrained-programming.html" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>约束编程的乐趣</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://kernel.dev/blog/why-is-gemini-4-carbon-taking-so-long/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>为什么 Gemini 4 Carbon 需要这么长时间？</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
     </div>
   </section>
 
@@ -178,7 +200,7 @@ h1 .thin { font-weight: 300; color: var(--ink-soft); }
       <div class="big">AI 每日早报 <span class="red">●</span></div>
       <div class="small">自动化生成 · 每日 10:00 前后自动更新 · 摘要由开源模型生成</div>
     </div>
-    <div class="small">数据源: GitHub Trending / HuggingFace Papers / HackerNews<br>2026-11-18 · 星期三</div>
+    <div class="small">数据源: GitHub Trending / HuggingFace Papers / arXiv cs.SD·eess.AS / HackerNews<br>2026-11-18 · 星期三</div>
   </div>
 </footer>
 
