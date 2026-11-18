@@ -61,8 +61,10 @@ def fetch_github_trending(limit=10):
         a = row.select_one("h2 a")
         if not a:
             continue
-        name = "/".join(a.get_text(strip=True).split()).replace(" / ", "/")
-        url = "https://github.com" + a.get("href", "")
+        href = a.get("href", "").strip("/")
+        # 直接取 href(形如 owner/repo), 避免文本里已有的 "/" 被再次拼接成双斜杠
+        name = re.sub(r"/+", "/", href)
+        url = "https://github.com/" + name
         desc_el = row.select_one("p")
         desc = desc_el.get_text(strip=True) if desc_el else ""
         lang_el = row.select_one('[itemprop="programmingLanguage"]')
