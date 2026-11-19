@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E8442E'/%3E%3Crect x='14' y='16' width='36' height='6' fill='%23fff'/%3E%3Crect x='14' y='29' width='36' height='4' fill='%23fff'/%3E%3Crect x='14' y='38' width='24' height='4' fill='%23fff'/%3E%3Crect x='14' y='47' width='30' height='4' fill='%23fff'/%3E%3C/svg%3E">
+<title>AI 每日早报 · 2026-11-19</title>
+<style>
+:root {
+  --ink: #2B2A27;
+  --ink-soft: #55534E;
+  --muted: #8A867E;
+  --paper: #FFFFFF;
+  --bg: #F7F6F3;
+  --line: #E6E2DA;
+  --accent: #8A6A4F;
+  --accent-soft: #F2EDE7;
+  --serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, Georgia, serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+/* ===== 头部 ===== */
+.masthead { background: var(--paper); border-bottom: 1px solid var(--line); position: relative; overflow: hidden; }
+.masthead-top { height: 3px; background: var(--accent); opacity: .45; }
+.masthead-inner { display:flex; justify-content:space-between; align-items:flex-end; padding-top: 56px; padding-bottom: 40px; gap: 40px; flex-wrap: wrap; }
+.kicker { display:inline-flex; align-items:center; font-size:12px; font-weight:600; letter-spacing:.42em; color: var(--muted); margin-bottom: 18px; }
+.kicker::before { content:""; width:24px; height:1px; background: var(--accent); display:inline-block; margin-right: 12px; }
+h1 { font-family: var(--serif); font-size: clamp(44px, 6.6vw, 78px); font-weight: 600; line-height: 1.08; letter-spacing: .06em; }
+h1 .thin { font-weight: 300; color: var(--ink-soft); }
+.masthead-meta { display:flex; flex-direction:column; gap:8px; align-items:flex-start; padding-bottom: 8px; }
+.meta-chip { border:none; background:none; padding:0; font-size: 13px; font-weight: 500; letter-spacing:.04em; color: var(--muted); box-shadow:none; }
+.meta-chip.hot { color: var(--ink); font-weight: 600; }
+.deco { display:none; }
+
+/* ===== 板块标题 ===== */
+.section { margin-top: 72px; }
+.sec-head { display:flex; align-items:baseline; gap:18px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.sec-no { font-family: var(--serif); font-size:16px; font-weight:600; color: var(--accent); letter-spacing:.08em; }
+.sec-title { font-family: var(--serif); font-size: clamp(26px, 3.2vw, 34px); font-weight:600; letter-spacing:.06em; color: var(--ink); }
+.sec-en { font-size:11px; font-weight:600; letter-spacing:.28em; color: var(--muted); text-transform:uppercase; margin-left:auto; }
+
+/* ===== Trending 卡片 ===== */
+.tcard { display:flex; gap:0; background: transparent; border-bottom: 1px solid var(--line); padding: 24px 0; transition: background .15s ease; }
+.tcard:hover { background: #FBFAF8; }
+.tcard-rank { flex: 0 0 74px; display:flex; align-items:flex-start; justify-content:flex-start; font-family: var(--serif); font-size: 26px; font-weight: 500; color: #C9C4BA; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.tcard-body { padding-right: 8px; flex:1; min-width:0; }
+.tcard-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+.tcard-name { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing:.01em; }
+.tcard-name:hover { color: var(--accent); }
+.tcard-sum { font-size: 14.5px; line-height: 1.85; color: var(--ink-soft); margin-bottom: 12px; max-width: 80ch; }
+.tcard-meta { display:flex; gap:8px; flex-wrap:wrap; }
+.chip { display:inline-block; font-size:11.5px; font-weight:500; padding:3px 9px; border:1px solid var(--line); color: var(--muted); background:#FCFBF9; letter-spacing:.02em; }
+.chip-lang { background: var(--accent-soft); border-color: transparent; color: #7A5C43; }
+.chip-star { background: transparent; border-color: transparent; color: var(--ink-soft); }
+.chip-today { background: transparent; border-color: #E3D5C8; color: var(--accent); }
+.chip-plain { background: transparent; }
+
+/* ===== 论文 / 快讯卡片 ===== */
+.grid { display:grid; gap:18px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.pcard { display:block; background: var(--paper); border: 1px solid var(--line); padding: 26px 24px; transition: border-color .15s ease, background .15s ease; }
+.pcard:hover { border-color: #D8D2C6; background: #FCFBF9; }
+.ptag { display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.22em; padding:0; margin-bottom:14px; background:none; color: var(--muted); }
+.ptag.red { background:none; color: var(--muted); }
+.ptag.dark { background:none; color: var(--muted); }
+.pcard h3 { font-family: var(--serif); font-size:17px; font-weight:600; line-height:1.6; margin-bottom:10px; letter-spacing:.02em; }
+.pcard p { font-size:13.5px; line-height:1.8; color: var(--ink-soft); }
+.pcard .src { display:block; margin-top:16px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }
+
+/* ===== 语音算法 / ASR ===== */
+.ameta { display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:10.5px; font-weight:500; letter-spacing:.16em; color:#B3AEA4; }
+.ameta .badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:.2em; padding:2px 7px; color: var(--accent); border:1px solid #E3D5C8; }
+.ameta .badge.audio { color: var(--muted); border-color: var(--line); }
+.acard h3 { margin-top:0; }
+
+/* ===== 页脚 ===== */
+.footer { margin-top: 88px; background: var(--paper); border-top: 1px solid var(--line); color: var(--ink); }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; gap:20px; padding: 38px 0; flex-wrap:wrap; }
+.footer .big { font-family: var(--serif); font-size:20px; font-weight:600; letter-spacing:.08em; }
+.footer .small { font-size:12px; color: var(--muted); line-height:1.9; }
+.footer .red { color: var(--accent); }
+
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .masthead-inner { flex-direction: column; align-items: flex-start; gap: 20px; padding-top: 40px; padding-bottom: 28px; }
+  .masthead-meta { padding-bottom: 0; }
+  .meta-chip { max-width: 100%; overflow-wrap: anywhere; }
+}
+@media (max-width: 600px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .tcard-rank { flex-basis: 60px; font-size: 28px; }
+  .masthead-inner { padding-top: 30px; padding-bottom: 26px; }
+}
+@media print {
+  .tcard, .pcard { box-shadow:none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top"></div>
+  <div class="wrap masthead-inner">
+    <div>
+      <div class="kicker">DAILY BRIEFING</div>
+      <h1>AI 每日<span class="thin">早报</span></h1>
+    </div>
+    <div class="masthead-meta">
+      <span class="meta-chip hot">2026-11-19 · 星期四</span>
+      <span class="meta-chip">生成时间 16:57 (北京时间)</span>
+      <span class="meta-chip">GitHub · HuggingFace · arXiv · HackerNews</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2 class="sec-title">GitHub 热门项目</h2>
+      <span class="sec-en">Trending Top 10</span>
+    </div>
+    <article class="tcard"><div class="tcard-rank">01</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a></div><p class="tcard-sum">Cursor plugin specification and official plugins</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 17,363</span><span class="chip chip-today">今日 +314</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">02</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/HKUDS/CLI-Anything" target="_blank" rel="noopener">HKUDS/CLI-Anything</a></div><p class="tcard-sum">&quot;CLI-Anything: Making ALL Software Agent-Native&quot; -- CLI-Hub:https://clianything.cc/</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 60,091</span><span class="chip chip-today">今日 +389</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">03</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/mvanhorn/last30days-skill" target="_blank" rel="noopener">mvanhorn/last30days-skill</a></div><p class="tcard-sum">AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 70,376</span><span class="chip chip-today">今日 +1,059</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">04</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/getarcaneapp/arcane" target="_blank" rel="noopener">getarcaneapp/arcane</a></div><p class="tcard-sum">Modern Docker Management, Designed for Everyone</p><div class="tcard-meta"><span class="chip chip-lang">Go</span><span class="chip chip-star">★ 9,993</span><span class="chip chip-today">今日 +547</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">05</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/NVIDIA/SkillEvaluator" target="_blank" rel="noopener">NVIDIA/SkillEvaluator</a></div><p class="tcard-sum">Multi-tier framework for evaluating AI agent skills and plugins with quality gates, security scanning, harness compatibility checks, semantic overlap detection, synthetic evaluation dataset generation, and live agent evaluation that measures how skills affect agent behavior. Ships reusable CI templates that bring every check to any repository.</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 3,942</span><span class="chip chip-today">今日 +312</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">06</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">nvm-sh/nvm</a></div><p class="tcard-sum">Node Version Manager - POSIX-compliant bash script to manage multiple active node.js versions.</p><div class="tcard-meta"><span class="chip chip-lang">Shell</span><span class="chip chip-star">★ 96,217</span><span class="chip chip-today">今日 +237</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">07</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/astral-sh/uv" target="_blank" rel="noopener">astral-sh/uv</a></div><p class="tcard-sum">An extremely fast Python package and project manager, written in Rust.</p><div class="tcard-meta"><span class="chip chip-lang">Rust</span><span class="chip chip-star">★ 92,349</span><span class="chip chip-today">今日 +258</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">08</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/google-research/paper-orchestra" target="_blank" rel="noopener">google-research/paper-orchestra</a></div><p class="tcard-sum">PaperOrchestra is a multi-agent framework for automated AI research paper writing.</p><div class="tcard-meta"><span class="chip chip-lang">Python</span><span class="chip chip-star">★ 4,665</span><span class="chip chip-today">今日 +1,524</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">09</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/google-labs-code/stitch-skills" target="_blank" rel="noopener">google-labs-code/stitch-skills</a></div><p class="tcard-sum">A library of Agent Skills designed to work with the Stitch MCP server. Each skill follows the Agent Skills open standard, for compatibility with coding agents such as Antigravity, Gemini CLI, Claude Code, Cursor.</p><div class="tcard-meta"><span class="chip chip-lang">TypeScript</span><span class="chip chip-star">★ 10,532</span><span class="chip chip-today">今日 +365</span></div></div></article>
+<article class="tcard"><div class="tcard-rank">10</div><div class="tcard-body"><div class="tcard-head"><a class="tcard-name" href="https://github.com/sveltejs/svelte" target="_blank" rel="noopener">sveltejs/svelte</a></div><p class="tcard-sum">web development for the rest of us</p><div class="tcard-meta"><span class="chip chip-lang">JavaScript</span><span class="chip chip-star">★ 89,723</span><span class="chip chip-today">今日 +692</span></div></div></article>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2 class="sec-title">HuggingFace 每日论文</h2>
+      <span class="sec-en">Daily Papers</span>
+    </div>
+    <div class="grid grid-3">
+      <a class="pcard" href="https://huggingface.co/papers/2611.14848" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>Tideway: Phase-Aware Tiered Memory Management for MoE Inference on Consumer Devices</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.24738" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>Jeveration: System One Models Now Generate</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.11318" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>PROLA: Principal-Orthogonal Low-rank Adaptation for Predictive Spatiotemporal Weather Downscaling</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.24154" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>Game2Player: Scaling Gameplay Experience for Visual Agents through Environment-Player Co-Development</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.23068" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>The Resolution Hypothesis: Agent Evolution&#x27;s Key Is Identifying Improvements</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+<a class="pcard" href="https://huggingface.co/papers/2611.24869" target="_blank" rel="noopener"><span class="ptag">PAPER</span><h3>WorldRuler: Interactive World Modeling under Configurable Rules</h3><p></p><span class="src">HUGGINGFACE.CO</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2 class="sec-title">语音算法 · ASR 前沿</h2>
+      <span class="sec-en">Speech &amp; Audio</span>
+    </div>
+    <div class="grid grid-3">
+      <a class="pcard acard" href="https://arxiv.org/abs/2606.21453" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-19</span></span><h3>Robustness of Text-Only Adapted Speech LLMs for Spoken Semantic Parsing</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.23609" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-19</span></span><h3>Label-Free Role-Aware Segmentation of Classroom Recordings: Recovering the Teacher from Transferable Structure</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.23348" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-19</span></span><h3>SIGMA: speaker-isolated, symptom-structured multimodal estimation of depression severity from clinical interviews</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.24794" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>ARXIV</span><span>11-19</span></span><h3>Exploring Speaker-Aware Engagement Modeling for Children with Autism Spectrum Disorder</h3><p></p><span class="src">ARXIV</span></a>
+      <a class="pcard acard" href="https://ashbuk.dev/posts/linux-stt-benchmark/" target="_blank" rel="noopener"><span class="ameta"><i class="badge">ASR</i><span>HN</span><span>11-17</span></span><h3>Parakeet vs. Whisper on an AMD iGPU: a speech-to-text benchmark on Linux</h3><p></p><span class="src">HN</span></a>
+      <a class="pcard acard" href="https://arxiv.org/abs/2611.23847" target="_blank" rel="noopener"><span class="ameta"><i class="badge audio">AUDIO</i><span>ARXIV</span><span>11-19</span></span><h3>Great Listeners, Poor Decision-Makers: Rethinking Agentic Audio AI</h3><p></p><span class="src">ARXIV</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="sec-no">04</span>
+      <h2 class="sec-title">AI / 技术快讯</h2>
+      <span class="sec-en">HackerNews Digest</span>
+    </div>
+    <div class="grid grid-2">
+      <a class="pcard" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Gemini 4 Neon</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://microsoft.ai/news/microsoft-ignite-2026/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Seven new models at scalable price-performance</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://europeanbusinessmagazine.com/ai-agents-better-questions-kpmg/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>AI agents ask better questions than KPMG accountants in audit trial</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/genie-4-now-available-project-genie/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Genie 4 is now available</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://micjm.com/blog/gemini-4-neon-looks-like-a-top-model/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Gemini 4 Neon looks like an Opus 5.5 competitor</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://openai.com/index/advancing-chip-design-with-our-models/" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Advancing chip design with OpenAI models</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www.radixark.com/blog/daisyrose-27b" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>DaisyRose-27B</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+<a class="pcard" href="https://www.anthropic.com/news/anthropic-prices-initial-public-offering" target="_blank" rel="noopener"><span class="ptag red">AI</span><h3>Anthropic prices initial public offering</h3><p></p><span class="src">NEWS.YCOMBINATOR.COM</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="big">AI 每日早报 <span class="red">●</span></div>
+      <div class="small">自动化生成 · 每日 10:00 前后自动更新 · 摘要由开源模型生成</div>
+    </div>
+    <div class="small">数据源: GitHub Trending / HuggingFace Papers / arXiv cs.SD·eess.AS / HackerNews<br>2026-11-19 · 星期四</div>
+  </div>
+</footer>
+
+</body>
+</html>
