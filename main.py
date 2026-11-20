@@ -431,17 +431,38 @@ def _mymemory_translate(text):
     return (resp.json().get("responseData", {}).get("translatedText") or "").strip()
 
 
+# 机器翻译常把 LLM 误译成「法学硕士」, 先把缩写展开成英文全称再翻
+TRANS_GLOSSARY = (
+    ("speech LLMs", "speech large language models"),
+    ("Speech LLMs", "speech large language models"),
+    ("LLMs", "large language models"),
+    ("LLM", "large language model"),
+    ("ASR", "automatic speech recognition"),
+    ("STT", "speech-to-text"),
+    ("TTS", "text-to-speech"),
+    ("iGPU", "integrated GPU"),
+    ("MoE", "mixture of experts"),
+)
+
+
+def expand_glossary(text):
+    for src, dst in TRANS_GLOSSARY:
+        text = text.replace(src, dst)
+    return text
+
+
 def translate_zh(text):
     """无 OpenRouter key 时的兜底: 先 Google 再 MyMemory, 均失败才返回原文。"""
     if not text or has_cjk(text):
         return text
     if text in _mm_cache:
         return _mm_cache[text]
+    source = expand_glossary(text)
     for name, fn in (("google", _google_translate), ("mymemory", _mymemory_translate)):
         if name in _trans_down:
             continue
         try:
-            zh = fn(text)
+            zh = fn(source)
         except Exception as e:
             # 同一轮内某源不可用后不再重试, 避免刷屏与拖慢
             _trans_down.add(name)
