@@ -32,10 +32,11 @@
 
 | 环境变量 | 必填 | 说明 |
 |---|---|---|
-| `OPENROUTER_API_KEY` | 推荐 | OpenRouter 的 key，`sk-or-v1-` 开头；不配则用免费翻译兜底 |
+| `OPENROUTER_API_KEY` | 推荐 | OpenRouter 的 key，`sk-or-v1-` 开头；不配或鉴权失败时自动走免费翻译（Google → MyMemory） |
 | `PUSHPLUS_TOKEN` | 推荐 | [pushplus.plus](http://www.pushplus.plus/) 微信扫码登录获取；**需实名认证**后才能推送 |
 | `DASHBOARD_URL` | 可选 | 微信卡片顶部「查看完整看板」链接 |
 | `OPENROUTER_MODEL` | 可选 | 默认 `google/gemma-4-31b-it:free`；可换 OpenRouter 上任意模型 ID |
+| `MYMEMORY_EMAIL` | 可选 | 填写邮箱后 MyMemory 每日额度从 5k 提升到 50k 字符，供翻译兜底使用 |
 
 > ⚠️ OpenRouter 免费模型会不定期下线，若日志报 404/「unavailable for free」，去 https://openrouter.ai/models 筛选 `:free` 换一个模型 ID 填入变量即可，无需改代码。
 

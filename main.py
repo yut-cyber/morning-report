@@ -336,7 +336,7 @@ def llm_summarize(trending, papers, asr, news):
         "要求:\n"
         "1. 数组顺序、数量必须与输入一一对应;\n"
         "2. summary 为简体中文一句话(<=40字), 说清这个项目/论文/新闻是做什么的、为什么值得关注;\n"
-        "3. title_cn 为中文短标题(<=18字), 专有名词可保留英文;\n"
+        "3. title_cn 为中文短标题(<=18字), 项目名/仓库名/模型名等专有名词保留英文原文, 不要翻译;\n"
         "4. 合并语义重复的内容(在对应 summary 中注明'与X相关'), 不要遗漏;\n"
         "5. asr 板块聚焦语音识别相关技术点(声学模型、解码、流式、说话人、语音大模型), 避免泛泛而谈。\n\n"
         + "\n".join(lines)
@@ -359,6 +359,9 @@ def llm_summarize(trending, papers, asr, news):
                 if resp.status_code == 429:
                     print(f"[llm] {model} 限流(429), 跳过")
                     continue
+                if resp.status_code in (401, 403):
+                    print(f"[llm] OpenRouter 鉴权失败({resp.status_code}), 请更新 OPENROUTER_API_KEY")
+                    break
                 resp.raise_for_status()
                 msg = resp.json()["choices"][0]["message"]
                 content = (msg.get("content") or "").strip()
@@ -391,27 +394,72 @@ def llm_summarize(trending, papers, asr, news):
 
 
 _mm_cache = {}
+_trans_down = set()
+
+def has_cjk(text):
+    return bool(re.search(r"[\u4e00-\u9fff]", text or ""))
+
+
+def _google_translate(text):
+    """Google 免费接口, 多域名轮询, GitHub Actions 上通常可用。"""
+    last = None
+    for host in ("translate.googleapis.com", "translate.google.com", "clients5.google.com"):
+        try:
+            resp = requests.get(
+                f"https://{host}/translate_a/single",
+                params={"client": "gtx", "sl": "en", "tl": "zh-CN", "dt": "t", "q": text[:900]},
+                headers=UA, timeout=12,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return "".join(seg[0] for seg in data[0] if seg and seg[0])
+        except Exception as e:
+            last = e
+    raise RuntimeError(last)
+
+
+def _mymemory_translate(text):
+    params = {"q": text[:450], "langpair": "en|zh-CN"}
+    email = os.getenv("MYMEMORY_EMAIL", "").strip()
+    if email:  # 配置后每日额度从 5k 字符提升到 50k
+        params["de"] = email
+    resp = requests.get(
+        "https://api.mymemory.translated.net/get",
+        params=params, headers=UA, timeout=12,
+    )
+    resp.raise_for_status()
+    return (resp.json().get("responseData", {}).get("translatedText") or "").strip()
+
 
 def translate_zh(text):
-    """无 OpenRouter key 时的兜底: MyMemory 免费翻译(无需密钥)。失败返回原文。"""
-    if not text or re.search(r"[一-鿿]", text):
+    """无 OpenRouter key 时的兜底: 先 Google 再 MyMemory, 均失败才返回原文。"""
+    if not text or has_cjk(text):
         return text
     if text in _mm_cache:
         return _mm_cache[text]
-    try:
-        resp = requests.get(
-            "https://api.mymemory.translated.net/get",
-            params={"q": text[:450], "langpair": "en|zh-CN"},
-            headers=UA, timeout=10,
-        )
-        resp.raise_for_status()
-        zh = resp.json().get("responseData", {}).get("translatedText", "").strip()
-        if not zh or "MYMEMORY WARNING" in zh.upper() or zh.lower() == text.lower():
-            zh = text
-    except Exception:
-        zh = text
-    _mm_cache[text] = zh
-    return zh
+    for name, fn in (("google", _google_translate), ("mymemory", _mymemory_translate)):
+        if name in _trans_down:
+            continue
+        try:
+            zh = fn(text)
+        except Exception as e:
+            # 同一轮内某源不可用后不再重试, 避免刷屏与拖慢
+            _trans_down.add(name)
+            print(f"[trans] {name} 不可用, 本轮跳过: {e}")
+            continue
+        if zh and has_cjk(zh) and zh.lower() != text.lower():
+            _mm_cache[text] = zh
+            return zh
+    _mm_cache[text] = text
+    return text
+
+
+def ensure_zh(value):
+    """校验模型输出: 若仍是英文则重新翻译。"""
+    value = (value or "").strip()
+    if not value:
+        return ""
+    return value if has_cjk(value) else translate_zh(value)
 
 
 def apply_summaries(trending, papers, asr, news):
@@ -420,32 +468,26 @@ def apply_summaries(trending, papers, asr, news):
     ps = data.get("papers", []) if data else []
     ass = data.get("asr", []) if data else []
     ns = data.get("news", []) if data else []
+
+    def pick(rows, i, key):
+        return rows[i].get(key, "") if i < len(rows) else ""
+
     for i, t in enumerate(trending):
-        if i < len(ts) and ts[i].get("summary"):
-            t["summary"] = ts[i]["summary"]
-        else:
-            t["summary"] = translate_zh(t["desc"]) if t["desc"] else "暂无描述, 点击查看仓库详情"
+        summary = ensure_zh(pick(ts, i, "summary"))
+        t["summary"] = summary or (translate_zh(t["desc"]) if t["desc"] else "暂无描述, 点击查看仓库详情")
     for i, p in enumerate(papers):
-        if i < len(ps) and ps[i].get("title_cn"):
-            p["title_cn"] = ps[i]["title_cn"]
-            p["summary"] = ps[i].get("summary", "")
-        else:
-            p["title_cn"] = translate_zh(p["title"])
-            p["summary"] = ""
+        p["title_cn"] = ensure_zh(pick(ps, i, "title_cn")) or translate_zh(p["title"])
+        p["summary"] = ensure_zh(pick(ps, i, "summary"))
     for i, a in enumerate(asr):
-        if i < len(ass) and ass[i].get("title_cn"):
-            a["title_cn"] = ass[i]["title_cn"]
-            a["summary"] = ass[i].get("summary", "")
-        else:
-            a["title_cn"] = translate_zh(a["title"])
-            a["summary"] = ""
+        a["title_cn"] = ensure_zh(pick(ass, i, "title_cn")) or translate_zh(a["title"])
+        a["summary"] = ensure_zh(pick(ass, i, "summary"))
+        if not a["summary"] and a.get("abstract"):
+            # 没有模型摘要时, 用摘要首句的译文补一句, 避免整张卡片只有英文标题
+            first = re.split(r"(?<=[.!?])\s+", a["abstract"].strip())[0][:220]
+            a["summary"] = translate_zh(first)
     for i, n in enumerate(news):
-        if i < len(ns) and ns[i].get("title_cn"):
-            n["title_cn"] = ns[i]["title_cn"]
-            n["summary"] = ns[i].get("summary", "")
-        else:
-            n["title_cn"] = translate_zh(n["title"])
-            n["summary"] = ""
+        n["title_cn"] = ensure_zh(pick(ns, i, "title_cn")) or translate_zh(n["title"])
+        n["summary"] = ensure_zh(pick(ns, i, "summary"))
     return trending, papers, asr, news
 
 
